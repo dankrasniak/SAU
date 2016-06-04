@@ -4,13 +4,23 @@ import MLPerceptron.MLPerceptronImpl;
 import MLPerceptron.TeachingPolicies.ClassicalMomentumTP;
 import MLPerceptron.TeachingPolicies.TeachingPolicy;
 import MLPerceptron.Utils.ErrorApproximator;
+import QLearinging.Record;
 import MLPerceptron.Utils.Vector;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import static MLPerceptron.CellType.ARCTANGENT;
 
 public class Main {
-
+static void foo(int[] a) { a[0]=2;}
     public static void main(String[] args) {
+        int[] actions = new int[1];
+        actions[0] = 1;
+        final Record record = new Record(new Vector(1),actions);
+        foo(record.actions);
+        System.out.println(record.actions[0]);
 
         // Prepare parameters
         final int INPUT_SIZE = 5;
@@ -25,7 +35,6 @@ public class Main {
         MLPerceptron mlperceptron = new MLPerceptronImpl(sizes, cellTypes);
 
 
-        /// TODO sadasd
 
         // Prepare model
 
@@ -43,6 +52,48 @@ public class Main {
                 .GetError(mlperceptron.Approximate(Zinput), ZoutputD);
         mlperceptron.BackPropagate(error);
         mlperceptron.ApplyWeights(teachingPolicy);
+
+
+
+
+        // Database
+        ArrayList<Record> data = new ArrayList<>();
+        List<Integer> decisions = new LinkedList<>();
+
+
+
+
+        // Advice Action
+        { // state
+
+            // Approximate the reward based on the current Decisions list
+            // Try to prepare a more worthy decisions list
+            // Save the new state and Decisions list as a new Record
+        }
+
+
+        // This Happened
+        // Przejście do następnego stanu, następnej decyzji
+        { // state (next)
+            // Move to next iteration values
+
+            // Update THE NEURAL NETWORK - N times
+            {
+                // Get Random Record from Database
+                // Run the StateValue function
+                {
+                    // Count the reward
+                    // Approximate the reward
+                    // Add the approximated reward to the counted one with appropriate gamma
+                    // Return the value
+                }
+
+                // Try to get a better decisions list
+                // Get the error gradient
+                // Update THE NEURAL NETWORK
+
+            }
+        }
 
 
 

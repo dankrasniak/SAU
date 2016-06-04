@@ -11,6 +11,10 @@ public class Vector {
 
     /*-----Public methods------*/
 
+    public Vector Clone() { // TODO Verify
+        return new Vector(this.values);
+    }
+
     static public Vector MlpVectorMatrixV(final Vector net, final Matrix w) {
         final int LENGTH = net.values.length;
         final int HEIGHT = w.GetHeight();
