@@ -25,9 +25,8 @@ public interface Layer {
 
     /**
      * Applies the weights
-     * @param newWeights Vector containing the weights that should be applied.
      */
-    void ApplyWeights(final TeachingPolicy teachingPolicy);
+    void ApplyWeights();
 
     /**
      * @returns The <b>Weights</b> of the neurons in the current layer.

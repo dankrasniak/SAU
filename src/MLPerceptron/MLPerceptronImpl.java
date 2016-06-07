@@ -9,8 +9,8 @@ import java.util.List;
 
 public class MLPerceptronImpl implements MLPerceptron {
 
-    public MLPerceptronImpl(final int[] sizes, final CellType[] cellTypes) {
-        Build(sizes, cellTypes);
+    public MLPerceptronImpl(final int[] sizes, final CellType[] cellTypes, final TeachingPolicy teachingPolicy) {
+        Build(sizes, cellTypes, teachingPolicy);
     }
 
 
@@ -35,7 +35,7 @@ public class MLPerceptronImpl implements MLPerceptron {
 
     final public void ApplyWeights(final TeachingPolicy teachingPolicy) {
         for (Layer layer : layers)
-            layer.ApplyWeights(teachingPolicy);
+            layer.ApplyWeights();
     }
 
 
@@ -46,11 +46,11 @@ public class MLPerceptronImpl implements MLPerceptron {
      * @param sizes Array containing the number of values passed between the layers of the network,
      *              also the input and the output.
      */
-    private void Build(int[] sizes, final CellType[] cellTypes) {
+    private void Build(int[] sizes, final CellType[] cellTypes, final TeachingPolicy teachingPolicy) {
         final int ARRAY_SIZE_M_1 = sizes.length - 1;
 
         for (int i = 0; i < ARRAY_SIZE_M_1; i++) {
-            layers.add(new LayerImpl(sizes[i] + 1, sizes[i+1], cellTypes[i]));
+            layers.add(new LayerImpl(sizes[i] + 1, sizes[i+1], cellTypes[i], teachingPolicy));
         }
     }
 

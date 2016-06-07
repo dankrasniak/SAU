@@ -53,8 +53,8 @@ public class QLearning {
                             final CellType[] cellTypes,
                             final TeachingPolicy teachingPolicy,
                             final double BetaV) {
-        QApproximator = new MLPerceptronImpl(sizes, cellTypes);
-        throw new NotImplementedException();
+        QApproximator = new MLPerceptronImpl(sizes, cellTypes, teachingPolicy);
+        throw new NotImplementedException(); // TODO
     }
 
     private double CalculateValue(final Vector state, final int[] decision) {
@@ -64,7 +64,7 @@ public class QLearning {
     private void PrepareABetterDecisionsList(final Vector state,
                                              final int[] decision,
                                              final double currentDecisionValue) {
-        throw new NotImplementedException();
+        throw new NotImplementedException(); // TODO
     }
 
     private void UpdateToTheNextIteration() {
@@ -86,9 +86,9 @@ public class QLearning {
 
             final double errorGrad = approximatedValue - estimatedValue;
             QApproximator.BackPropagate(new Vector(new double[] {errorGrad}));
-            QApproximator.ApplyWeights(teachingPolicy); // TODO Change TeachingPolicy handling in MLPerceptron
+            QApproximator.ApplyWeights(); // TODO Change TeachingPolicy handling in MLPerceptron
         }
-        throw new NotImplementedException();
+        throw new NotImplementedException(); // TODO
     }
 
     private Vector TweakInput(final Record record) {

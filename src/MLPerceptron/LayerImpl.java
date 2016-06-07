@@ -10,8 +10,8 @@ import java.util.function.Function;
 
 public class LayerImpl implements Layer {
 
-    LayerImpl(final int inputSize, final int outputSize, final CellType cellType) {
-        Build(inputSize, outputSize, cellType);
+    LayerImpl(final int inputSize, final int outputSize, final CellType cellType, final TeachingPolicy teachingPolicy) {
+        Build(inputSize, outputSize, cellType, teachingPolicy);
     }
 
 
@@ -30,7 +30,7 @@ public class LayerImpl implements Layer {
         return Vector.MlpVectorMatrixV(dNet, weights);
     }
 
-    final public void ApplyWeights(final TeachingPolicy teachingPolicy) {
+    final public void ApplyWeights() {
         teachingPolicy.Execute(weights, dWeights, Momentum);
     }
 
@@ -39,10 +39,11 @@ public class LayerImpl implements Layer {
 
     /*-----Private methods------*/
 
-    private void Build(final int inputSize, final int outputSize, final CellType cellType) {
+    private void Build(final int inputSize, final int outputSize, final CellType cellType, final TeachingPolicy teachingPolicy) {
         weights = new Matrix(outputSize, inputSize);
         Initialize(weights);
         Momentum = new Matrix(weights.GetHeight(), weights.GetLength());
+        this.teachingPolicy = teachingPolicy;
 
         switch (cellType) {
             case LINEAR:
@@ -130,6 +131,7 @@ public class LayerImpl implements Layer {
     private Matrix dWeights;
     private Vector Net;
     private Matrix Momentum;
+    private TeachingPolicy teachingPolicy;
     private Function<Vector, Vector> ActivationFunction;
     private Function<Vector, Vector> DeactivationFunction;
 }
