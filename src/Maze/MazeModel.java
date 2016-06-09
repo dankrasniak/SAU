@@ -17,7 +17,8 @@ class MazeModel implements Model {
 
 	
 	public double getReward(final Vector state){
-		return state.Get(2);
+        return state.Get(2);
+		//return state.Get(2);
 	}
 	public Vector[] stateFunction(final Vector state, final int[] actions){
 		MazeModel testModel=new MazeModel(state);

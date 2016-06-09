@@ -98,13 +98,13 @@ public class QLearning {
         int[] modifiedDecisions = decisions.clone();
         double sigmaDiscount;
 
-        // Modify the Decisions Lis
+        // Modify the Decisions List
         // 8 is the maximal value a decision can have
         // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
-            sigmaDiscount = (double) ((i + 1) / HORIZON_LENGTH);
+            sigmaDiscount = 1.0;//(double) ((i + 1) / HORIZON_LENGTH);
             modifiedDecisions[i] =
-                    Math.abs( ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 2) * sigmaDiscount) ) % 8 );
+                    Math.abs( ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 1) * sigmaDiscount) ) % 8 );
         }
 
         // If the value of the state with new action vector is bigger, replace the previous action vector
@@ -119,7 +119,8 @@ public class QLearning {
     }
 
     private void UpdateToTheNextIteration() {
-        for (int i = 0; i < HORIZON_LENGTH;) {
+        final int HORIZON_LENGTH_M1 = HORIZON_LENGTH - 1;
+        for (int i = 0; i < HORIZON_LENGTH_M1;) {
             Decisions[i] = Decisions[++i];
         }
     }
@@ -127,7 +128,7 @@ public class QLearning {
     private void RewriteHistoryeh() {
 
         for (int i = 0; i < TIMES_TO_REWRITE_HISTORY; i++) {
-            final Record record = records.get(random.nextInt(records.size() - 1));
+            final Record record = records.get(random.nextInt(records.size()));
 
             double estimatedValue = CalculateValue(record.state, record.actions);
 

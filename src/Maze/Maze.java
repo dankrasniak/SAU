@@ -1,5 +1,10 @@
 package Maze;
 
+import MLPerceptron.CellType;
+import MLPerceptron.TeachingPolicies.ClassicalMomentumTP;
+import MLPerceptron.TeachingPolicies.TeachingPolicy;
+import QLearinging.QLearning;
+
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +13,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-
+import static MLPerceptron.CellType.ARCTANGENT;
 
 
 public class Maze extends JFrame  implements ActionListener {
@@ -19,6 +24,7 @@ public class Maze extends JFrame  implements ActionListener {
 	private MazeKeyboardController mazeKeyboardController;
 	private MazeView mazeView;
     private Timer timer;
+    private QLearning qLearning;
 
     public Maze() {
 
@@ -26,10 +32,39 @@ public class Maze extends JFrame  implements ActionListener {
     }
 
     private void initUI() {
+
+        mazeModel=new MazeModel();
+
+        // QLearning
+
+        // Prepare parameters
+        final int INPUT_SIZE = 5;
+        final int OUTPUT_SIZE = 1;
+        final double BetaV = 0.01;
+        final int HORIZON_LENGTH = 10;
+        final int TIMES_TO_REWRITE_HISTORY = 40;
+        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 40;
+        final double GAMMA = 0.98;
+        TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
+
+        // Build the neural network
+        int[] sizes = new int[] {INPUT_SIZE, 20, 20, OUTPUT_SIZE};
+        CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, ARCTANGENT};
+        qLearning = new QLearning(
+                sizes,
+                cellTypes,
+                teachingPolicy,
+                HORIZON_LENGTH,
+                TIMES_TO_REWRITE_HISTORY,
+                TIMES_TO_PREPARE_BETTER_SOLUTION,
+                GAMMA,
+                this.mazeModel);
+
+        // -- QLearning
     	
-    	mazeModel=new MazeModel();
-    	mazeKeyboardController=new MazeKeyboardController(mazeModel);
-    	addKeyListener(mazeKeyboardController);
+
+//    	mazeKeyboardController=new MazeKeyboardController(mazeModel);
+//    	addKeyListener(mazeKeyboardController);
         mazeView = new MazeView(mazeModel);
         add(mazeView);
         
@@ -61,12 +96,16 @@ public class Maze extends JFrame  implements ActionListener {
     }
     
     public void actionPerformed(ActionEvent e) {
+        mazeModel.setAAngleMultiplier45(qLearning.AdviseAction(mazeModel.getCurrentState()));
+
     	this.mazeModel.update((double)(MazeModel.getTimerdelay())/(double)(1000));
+
+        qLearning.ThisHappened(mazeModel.getCurrentState());
+
         repaint();
     }
     
     private void initTimer() {
-
         timer = new Timer(MazeModel.getTimerdelay(), this);
         timer.start();
     }

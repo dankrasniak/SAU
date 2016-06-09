@@ -25,9 +25,9 @@ public class Matrix {
 
     final public void Set(final int x, final int y, final double value) { values[x][y] = value; }
 
-    final public int GetLength() { return values.length; }
+    public int GetHeight() { return values.length; }
 
-    final public int GetHeight() { return values[0].length; }
+    public int GetLength() { return values[0].length; }
 
 
     /*-----Variables------*/

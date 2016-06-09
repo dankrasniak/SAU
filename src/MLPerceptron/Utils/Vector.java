@@ -16,17 +16,17 @@ public class Vector {
     }
 
     static public Vector MlpVectorMatrixV(final Vector net, final Matrix w) {
-        final int LENGTH = net.values.length;
+        final int LENGTH = w.GetLength() - 1;
         final int HEIGHT = w.GetHeight();
 
-        if (LENGTH != (w.GetLength() - 1)) /// Polarisation
+        if (HEIGHT != net.GetLength())
             throw new IllegalArgumentException("MlpVectorxMatrixV");
 
-        double[] result = new double[HEIGHT];
+        double[] result = new double[LENGTH];
 
         for (int x = 0; x < LENGTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
-                result[y] += net.values[x] * w.Get(x, y);
+                result[x] += net.values[y] * w.Get(y, x);
             }
         }
 
@@ -63,7 +63,7 @@ public class Vector {
     final public Vector MlpVectorMatrix(final Matrix m) {
         final int LENGTH = values.length;
         final int HEIGHT = m.GetHeight();
-        Vector result = new Vector(LENGTH);
+        Vector result = new Vector(HEIGHT);
 
         if (LENGTH != m.GetLength())
             throw new IllegalArgumentException();

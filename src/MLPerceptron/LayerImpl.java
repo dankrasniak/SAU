@@ -73,8 +73,8 @@ public class LayerImpl implements Layer {
     }
 
     private Vector TweakInput(final Vector input) {
-        final int LENGTH = input.GetLength() + 1;
-        double[] result = new double[LENGTH];
+        final int LENGTH = input.GetLength();
+        double[] result = new double[LENGTH + 1];
 
         for (int i = 0; i < LENGTH; i++)
             result[i] = input.Get(i);
