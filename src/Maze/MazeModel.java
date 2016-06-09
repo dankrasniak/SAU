@@ -1,8 +1,9 @@
 package Maze;
 
 import MLPerceptron.Utils.Vector;
+import QLearinging.Model;
 
-class MazeModel {
+class MazeModel implements Model {
 	
 	private final static double segmentSizeX=2;
 	private final static double segmentSizeY=3;
@@ -15,10 +16,10 @@ class MazeModel {
 	private final static int timerDelay = 100;
 
 	
-	public static double getReward(final Vector state){
+	public double getReward(final Vector state){
 		return state.Get(2);
 	}
-	public static Vector[] stateFunction(final Vector state, final int[] actions){
+	public Vector[] stateFunction(final Vector state, final int[] actions){
 		MazeModel testModel=new MazeModel(state);
 		Vector [] nextStates=new Vector[actions.length];
 		

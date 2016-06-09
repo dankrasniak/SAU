@@ -14,7 +14,9 @@ import java.util.List;
 import static MLPerceptron.CellType.ARCTANGENT;
 
 public class Main {
-static void foo(int[] a) { a[0]=2;}
+static void foo(int[] a) { int[] b = new int[1]; b[0] = 2; a[0]= b[0];
+    //a[0]=2;
+    }
     public static void main(String[] args) {
         int[] actions = new int[1];
         actions[0] = 1;
@@ -24,7 +26,7 @@ static void foo(int[] a) { a[0]=2;}
 
         // Prepare parameters
         final int INPUT_SIZE = 5;
-        final int OUTPUT_SIZE = 8;
+        final int OUTPUT_SIZE = 1;
         final double BetaV = 0.01;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
@@ -32,7 +34,7 @@ static void foo(int[] a) { a[0]=2;}
         // Build the neural network
         int[] sizes = new int[] {INPUT_SIZE, 20, 20, OUTPUT_SIZE};
         CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, ARCTANGENT};
-        MLPerceptron mlperceptron = new MLPerceptronImpl(sizes, cellTypes);
+        MLPerceptron mlperceptron = new MLPerceptronImpl(sizes, cellTypes, teachingPolicy);
 
 
 
@@ -51,7 +53,7 @@ static void foo(int[] a) { a[0]=2;}
         error = ErrorApproximator
                 .GetError(mlperceptron.Approximate(Zinput), ZoutputD);
         mlperceptron.BackPropagate(error);
-        mlperceptron.ApplyWeights(teachingPolicy);
+        mlperceptron.ApplyWeights();
 
 
 

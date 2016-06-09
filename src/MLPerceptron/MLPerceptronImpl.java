@@ -33,7 +33,7 @@ public class MLPerceptronImpl implements MLPerceptron {
             passedValue = layer.Backward(passedValue);
     }
 
-    final public void ApplyWeights(final TeachingPolicy teachingPolicy) {
+    final public void ApplyWeights() {
         for (Layer layer : layers)
             layer.ApplyWeights();
     }
