@@ -6,7 +6,6 @@ import MLPerceptron.MLPerceptron;
 import MLPerceptron.MLPerceptronImpl;
 import MLPerceptron.TeachingPolicies.TeachingPolicy;
 import MLPerceptron.Utils.Vector;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -71,9 +70,14 @@ public class QLearning {
             gammai *= GAMMA;
         }
 
-        result += gammai * QApproximator.Approximate(TweakInput(new Record(state, decisions))).Get(0); // TODO MEH
+        result += gammai * QApproximator.Approximate(
+                TweakInput(
+                        new Record(
+                                nextStates[HORIZON_LENGTH-1],
+                                new int[]{decisions[HORIZON_LENGTH-1]})))
+                .Get(0); // TODO MEH
 
-        return result; // TODO SAME AS V APPROXIMATOR
+        return result; // TODO SAME AS V APPROXIMATOR // Update: Almost
     }
 
     private double PrepareABetterDecisionsList(final Vector state,
