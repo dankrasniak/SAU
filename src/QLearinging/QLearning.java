@@ -102,7 +102,7 @@ public class QLearning {
         // 8 is the maximal value a decision can have
         // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
-            sigmaDiscount = 1.0;//(double) ((i + 1) / HORIZON_LENGTH);
+            sigmaDiscount = 1.0;// + (double) ((i + 1) / HORIZON_LENGTH);
             modifiedDecisions[i] =
                     Math.abs( ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 1) * sigmaDiscount) ) % 8 );
         }
@@ -149,7 +149,7 @@ public class QLearning {
         for (int i = 0; i < STATE_SIZE - 1; i++) {
             result[i] = record.state.Get(i);
         }
-        result[STATE_SIZE] = record.actions[0]; // TODO
+        result[STATE_SIZE] = (double) record.actions[0] / 7; // TODO
 
         return new Vector(result);
     }

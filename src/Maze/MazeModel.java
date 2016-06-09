@@ -17,7 +17,12 @@ class MazeModel implements Model {
 
 	
 	public double getReward(final Vector state){
-        return state.Get(2);
+        double penalty = 0.0;
+        if (collisionDetectedX || collisionDetectedY)
+            penalty = 5.0;
+
+        double reward = Math.abs(state.Get(2) + 1) / (state.Get(2) + 1) * Math.log(Math.min(state.Get(2), 0.35) + 0.2) - penalty;
+        return reward;
 		//return state.Get(2);
 	}
 	public Vector[] stateFunction(final Vector state, final int[] actions){

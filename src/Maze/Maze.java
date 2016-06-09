@@ -48,7 +48,7 @@ public class Maze extends JFrame  implements ActionListener {
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
-        int[] sizes = new int[] {INPUT_SIZE, 20, 20, OUTPUT_SIZE};
+        int[] sizes = new int[] {INPUT_SIZE, 60, OUTPUT_SIZE};
         CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, ARCTANGENT};
         qLearning = new QLearning(
                 sizes,
