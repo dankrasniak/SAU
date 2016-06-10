@@ -5,6 +5,7 @@ import MLPerceptron.CellType;
 import MLPerceptron.MLPerceptron;
 import MLPerceptron.MLPerceptronImpl;
 import MLPerceptron.TeachingPolicies.TeachingPolicy;
+import MLPerceptron.Utils.ErrorApproximator;
 import MLPerceptron.Utils.Vector;
 
 import java.util.ArrayList;
@@ -97,14 +98,15 @@ public class QLearning {
     private double ModifyDecisionsList(final Vector state, int[] decisions, double currentDecisionValue) {
         int[] modifiedDecisions = decisions.clone();
         double sigmaDiscount;
+        int tmp;
 
         // Modify the Decisions List
         // 8 is the maximal value a decision can have
         // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
             sigmaDiscount = 1.0;// + (double) ((i + 1) / HORIZON_LENGTH);
-            modifiedDecisions[i] =
-                    Math.abs( ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 1) * sigmaDiscount) ) % 8 );
+            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 1) * sigmaDiscount) ) % 8;
+            modifiedDecisions[i] = (tmp < 0) ? (7 - tmp) : tmp;
         }
 
         // If the value of the state with new action vector is bigger, replace the previous action vector
@@ -136,20 +138,51 @@ public class QLearning {
 
             final double approximatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
-            final double errorGrad = approximatedValue - estimatedValue;
-            QApproximator.BackPropagate(new Vector(new double[] {errorGrad}));
+            final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue); //final double errorGrad = approximatedValue - estimatedValue;
+
+            QApproximator.BackPropagate(errorGrad);
             QApproximator.ApplyWeights();
         }
     }
 
     private Vector TweakInput(final Record record) {
         final int STATE_SIZE = record.state.GetLength();
-        double[] result = new double[STATE_SIZE + 1];
+//        double[] result = new double[STATE_SIZE + 1];
+        double[] result = new double[STATE_SIZE + 2];
 
-        for (int i = 0; i < STATE_SIZE - 1; i++) {
+        for (int i = 0; i < STATE_SIZE - 2; i++) {
             result[i] = record.state.Get(i);
         }
-        result[STATE_SIZE] = (double) record.actions[0] / 7; // TODO
+        //result[STATE_SIZE] = (double) record.actions[0] / 7; // TODO
+
+        {// TMP DELETE THIS
+            double ax, ay;
+            switch (record.actions[0]) {
+                case 0:  ax=1;ay=0;
+                    break;
+                case 1:  ax=0.70710678;ay=0.70710678;
+                    break;
+                case 2:  ax=0;ay=1;
+                    break;
+                case 3:  ax=-0.70710678;ay=0.70710678;
+                    break;
+                case 4:  ax=-1;ay=0;
+                    break;
+                case 5:  ax=-0.70710678;ay=-0.70710678;
+                    break;
+                case 6:  ax=0;ay=-1;
+                    break;
+                case 7:  ax=0.70710678;ay=-0.70710678;
+                    break;
+                default: ax=0;ay=0;
+                    break;
+            }
+            result[STATE_SIZE-1] = ax;
+            result[STATE_SIZE] = ay;
+
+            result[0] = result[0] / 2;
+            result[1] = result[1] / 3;
+        }
 
         return new Vector(result);
     }
