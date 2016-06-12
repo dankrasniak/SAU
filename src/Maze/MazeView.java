@@ -167,6 +167,8 @@ class MazeView extends JPanel{
 	    	g2d.drawString("colisions="+mazeModel.getCollisionCount(), xTextPosition, 12*yTextHeight);
 	    	g2d.drawString("segmentType="+mazeModel.getSegmentType(), xTextPosition, 13*yTextHeight);	    	
 	    	g2d.drawString("time="+(Math.round(mazeModel.getTimeInSegment()*100.0)/100.0), xTextPosition, 14*yTextHeight);
+	    	g2d.drawString("lastTime="+(Math.round(mazeModel.getLastTimeInSegment()*100.0)/100.0), xTextPosition, 15*yTextHeight);
+	    	g2d.drawString("averageTime="+(Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0), xTextPosition, 16*yTextHeight);
 	    	
 	    	
 	    g2d.dispose();

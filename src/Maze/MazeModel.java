@@ -2,6 +2,8 @@ package Maze;
 
 import MLPerceptron.Utils.Vector;
 import QLearinging.Model;
+import java.util.LinkedList;
+
 
 class MazeModel implements Model {
 	
@@ -57,6 +59,8 @@ class MazeModel implements Model {
 	private int collisionCount=0;
 	
 	private double timeInSegment=0;
+	private LinkedList<Double> timeInSegment_list=new LinkedList<Double>();
+	private static int timeInSegment_list_lenght=10;
 	
 	
 	
@@ -87,6 +91,17 @@ class MazeModel implements Model {
 	public double getTimeInSegment() {
 		return timeInSegment;
 	}
+	public double getLastTimeInSegment() {
+		return timeInSegment_list.size()>0?timeInSegment_list.peekLast():-1;
+	}
+	public double getAverageTimeInSegment() {
+		double _sum=0;
+		for(double _i:timeInSegment_list){
+			_sum+=_i;
+		}
+		return timeInSegment_list.size()>0?_sum/timeInSegment_list.size():-1;
+	}
+	
 	public boolean isCollisionDetectedX() {
 		return collisionDetectedX;
 	}
@@ -238,6 +253,13 @@ class MazeModel implements Model {
 		
 		// changing segment
 		if( x>=segmentSizeX){
+			
+			
+			timeInSegment_list.addLast(timeInSegment);
+			while (timeInSegment_list.size()>timeInSegment_list_lenght)
+			{
+				timeInSegment_list.removeFirst();
+			}
 			
 			timeInSegment=0;
 			
