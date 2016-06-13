@@ -46,10 +46,12 @@ public class Maze extends JFrame  implements ActionListener {
         final int TIMES_TO_REWRITE_HISTORY = 30;
         final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;//40;
         final double GAMMA = 0.98;
+        final double SIGMA_MIN = 0.5;
+        final double SIGMA_START = 2;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
-        int[] sizes = new int[] {INPUT_SIZE, 60, OUTPUT_SIZE};
+        int[] sizes = new int[] {INPUT_SIZE, 60, 60, OUTPUT_SIZE};
         CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, LINEAR};
         qLearning = new QLearning(
                 sizes,
@@ -59,6 +61,8 @@ public class Maze extends JFrame  implements ActionListener {
                 TIMES_TO_REWRITE_HISTORY,
                 TIMES_TO_PREPARE_BETTER_SOLUTION,
                 GAMMA,
+                SIGMA_MIN,
+                SIGMA_START,
                 this.mazeModel);
 
         // -- QLearning

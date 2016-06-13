@@ -22,6 +22,8 @@ public class QLearning {
                      final int TIMES_TO_REWRITE_HISTORY,
                      final int TIMES_TO_PREPARE_BETTER_SOLUTION,
                      final double GAMMA,
+                     final double SIGMA_MIN,
+                     final double SIGMA_START,
                      final Model model) {
 
 
@@ -44,6 +46,8 @@ public class QLearning {
         this.TIMES_TO_REWRITE_HISTORY = TIMES_TO_REWRITE_HISTORY;
         this.TIMES_TO_PREPARE_BETTER_SOLUTION = TIMES_TO_PREPARE_BETTER_SOLUTION;
         this.GAMMA = GAMMA;
+        this.SIGMA_MIN = SIGMA_MIN;
+        this.SIGMA_START = SIGMA_START;
         Decisions = new int[HORIZON_LENGTH]; // TODO MORE
         this._model = model;
 
@@ -117,10 +121,11 @@ public class QLearning {
     private double PrepareABetterDecisionsList(final Vector state,
                                              int[] decisions,
                                              double currentDecisionsValue) {
-        int timesITried = 0;
-        // TODO Algorytm Ewolucyjny
+        phi = 0;
+        timesITried = 0;
+        currentSigma = SIGMA_START;
 
-        while (timesITried < TIMES_TO_PREPARE_BETTER_SOLUTION) { // TODO sigma < coś
+        while (timesITried < TIMES_TO_PREPARE_BETTER_SOLUTION || currentSigma < SIGMA_MIN) {
             ++timesITried;
             currentDecisionsValue = ModifyDecisionsList(state, decisions, currentDecisionsValue);
         }
@@ -137,8 +142,8 @@ public class QLearning {
         // 8 is the maximal value a decision can have
         // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
-            sigmaDiscount = 1.0;// + (double) ((i + 1) / HORIZON_LENGTH);
-            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, 1) * sigmaDiscount) ) % 8;
+            sigmaDiscount = 1.0 + (double) ((i + 1) / HORIZON_LENGTH);
+            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, currentSigma) * sigmaDiscount) ) % 8; // 1
             modifiedDecisions[i] = (tmp < 0) ? (7 - tmp) : tmp;
         }
 
@@ -147,10 +152,25 @@ public class QLearning {
         if (newDecisionsValue > currentDecisionValue) {
             System.arraycopy(modifiedDecisions, 0, decisions, 0, HORIZON_LENGTH);
             currentDecisionValue = newDecisionsValue;
+            ++phi;
         }
 
-        // UpdateSigma()
+        UpdateSigma();
         return currentDecisionValue;
+    }
+
+    private void UpdateSigma() {
+        if (timesITried % M != 0)
+            return;
+
+        if (phi / M < 0.2) {
+            currentSigma *= C1;
+        }
+        else if (phi / M > 0.2)
+        {
+            currentSigma *= C2;
+        }
+        phi = 0; // if currentSigma == 0.2
     }
 
     private void UpdateToTheNextIteration() {
@@ -232,5 +252,16 @@ public class QLearning {
     private MLPerceptron QApproximator;
     private final Model _model;
     private final double GAMMA;
+
+    // Evolution Algorithm
+    private int phi;
+    private int timesITried;
+    private double currentSigma;
+    private final double SIGMA_MIN;
+    private final double SIGMA_START;
+    private final double M = 10;
+    private final double C1 = 0.82;
+    private final double C2 = 1.2;
+
     private static Logger logger = Logger.getLogger("MyLog");
 }
