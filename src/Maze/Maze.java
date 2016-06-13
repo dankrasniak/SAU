@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import static MLPerceptron.CellType.ARCTANGENT;
+import static MLPerceptron.CellType.LINEAR;
 
 
 public class Maze extends JFrame  implements ActionListener {
@@ -40,16 +41,16 @@ public class Maze extends JFrame  implements ActionListener {
         // Prepare parameters
         final int INPUT_SIZE = 6;//5;
         final int OUTPUT_SIZE = 1;
-        final double BetaV = 0.001;
-        final int HORIZON_LENGTH = 10;
-        final int TIMES_TO_REWRITE_HISTORY = 80;
-        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 80;//40;
+        final double BetaV = -0.0001;
+        final int HORIZON_LENGTH = 45;
+        final int TIMES_TO_REWRITE_HISTORY = 30;
+        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;//40;
         final double GAMMA = 0.98;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
         int[] sizes = new int[] {INPUT_SIZE, 60, OUTPUT_SIZE};
-        CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, ARCTANGENT};
+        CellType[] cellTypes = new CellType[] {ARCTANGENT, ARCTANGENT, LINEAR};
         qLearning = new QLearning(
                 sizes,
                 cellTypes,

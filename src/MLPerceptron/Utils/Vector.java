@@ -88,6 +88,18 @@ public class Vector {
         return values[i];
     }
 
+    @Override
+    public String toString() {
+        String result = "[" + values[0];
+        final int LENGTH = values.length;
+
+        for (int i = 1; i < LENGTH; i++) {
+            result += ", " + values[i];
+        }
+        result += "]";
+
+        return result;
+    }
 
     /*-----Variables------*/
 

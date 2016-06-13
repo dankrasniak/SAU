@@ -8,8 +8,10 @@ import MLPerceptron.TeachingPolicies.TeachingPolicy;
 import MLPerceptron.Utils.ErrorApproximator;
 import MLPerceptron.Utils.Vector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.*;
 
 public class QLearning {
 
@@ -21,6 +23,22 @@ public class QLearning {
                      final int TIMES_TO_PREPARE_BETTER_SOLUTION,
                      final double GAMMA,
                      final Model model) {
+
+
+        // Prepare Logger
+        try {
+            FileHandler fh = new FileHandler("MyLogFile.log");
+            logger.addHandler(fh);
+            fh.setFormatter(new Formatter() {
+                @Override
+                public String format(LogRecord record) {
+                    return record.getMessage() + "\n";
+                }
+            });
+            logger.setUseParentHandlers(false);
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
 
         this.HORIZON_LENGTH = HORIZON_LENGTH;
         this.TIMES_TO_REWRITE_HISTORY = TIMES_TO_REWRITE_HISTORY;
@@ -39,6 +57,14 @@ public class QLearning {
         final double decisionValue = CalculateValue(state, Decisions);
 
         PrepareABetterDecisionsList(state, Decisions, decisionValue); // TODO Not sure if finished parameters
+
+        // LOG
+//        String toLog =
+//                "State: " + state.toString() + "\n" +
+//                "Decision: " + Decisions[0] + "\n" +
+//                "DecisionValue: " + decisionValue + "\n" +
+//                "-------";
+//        logger.info(toLog);
 
         records.add(new Record(state, Decisions));
 
@@ -70,13 +96,20 @@ public class QLearning {
             result += gammai * _model.getReward(nextStates[i]);
             gammai *= GAMMA;
         }
-
-        result += gammai * QApproximator.Approximate(
+        double approx = QApproximator.Approximate(
                 TweakInput(
                         new Record(
                                 nextStates[HORIZON_LENGTH-1],
                                 new int[]{decisions[HORIZON_LENGTH-1]})))
                 .Get(0); // TODO MEH
+        result += gammai * approx;
+// LOG
+        String toLog =
+                "State: " + nextStates[HORIZON_LENGTH-1].toString() + "\n" +
+                        "Decision: " + decisions[HORIZON_LENGTH-1] + "\n" +
+                        "DecisionValue: " + approx + "\n" +
+                        "-------";
+        logger.info(toLog);
 
         return result; // TODO SAME AS V APPROXIMATOR // Update: Almost
     }
@@ -199,4 +232,5 @@ public class QLearning {
     private MLPerceptron QApproximator;
     private final Model _model;
     private final double GAMMA;
+    private static Logger logger = Logger.getLogger("MyLog");
 }

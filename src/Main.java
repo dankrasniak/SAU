@@ -21,7 +21,7 @@ public class Main {
         // Prepare parameters
         final int INPUT_SIZE = 2;
         final int OUTPUT_SIZE = 1;
-        final double BetaV = 0.01;
+        final double BetaV = -0.01;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
 
@@ -34,18 +34,29 @@ public class Main {
         // Approximate
 
         /// Zaślepki
-        Vector Zinput = new Vector(INPUT_SIZE);
-        Vector ZoutputD = new Vector(OUTPUT_SIZE);
+        Vector Zinput = new Vector(new double[] {1.0, 0.5}); //INPUT_SIZE
+        Vector ZoutputD = new Vector(new double[] {1}); //OUTPUT_SIZE
 
 
         Vector error;
 
         error = ErrorApproximator
                 .GetError(mlperceptron.Approximate(Zinput).Get(0), ZoutputD.Get(0));
+        System.out.println(error.Get(0));
+
         mlperceptron.BackPropagate(error);
         mlperceptron.ApplyWeights();
 
+        error = ErrorApproximator
+                .GetError(mlperceptron.Approximate(Zinput).Get(0), ZoutputD.Get(0));
+        System.out.println(error.Get(0));
 
+        mlperceptron.BackPropagate(error);
+        mlperceptron.ApplyWeights();
+
+        error = ErrorApproximator
+                .GetError(mlperceptron.Approximate(Zinput).Get(0), ZoutputD.Get(0));
+        System.out.println(error.Get(0));
 
 
         // Database

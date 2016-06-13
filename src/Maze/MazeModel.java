@@ -21,11 +21,12 @@ class MazeModel implements Model {
 	public double getReward(final Vector state){
         double penalty = 0.0;
         if (collisionDetectedX || collisionDetectedY)
-            penalty = 5.0;
+            penalty = 4.0;
 
-        double reward = Math.abs(state.Get(2) + 1) / (state.Get(2) + 1) * Math.log(Math.min(state.Get(2), 0.35) + 0.2) - penalty;
+//        double reward = Math.abs(state.Get(2) + 1) / (state.Get(2) + 1) * Math.log(Math.min(state.Get(2), 0.35) + 0.2) - penalty;
+        double reward = state.Get(2) - penalty;
         return reward;
-		//return state.Get(2);
+//		return state.Get(2);
 	}
 	public Vector[] stateFunction(final Vector state, final int[] actions){
 		MazeModel testModel=new MazeModel(state);
@@ -219,6 +220,7 @@ class MazeModel implements Model {
 			
 			x=(segmentBorderWidth+ballRadius);
 			vx=0;
+			vy=0;//TODO
 		}
 		else 
 		if(
@@ -229,6 +231,7 @@ class MazeModel implements Model {
 			
 			x=(segmentSizeX-(segmentBorderWidth+ballRadius));
 			vx=0;
+			vy=0;//TODO
 		}
 
 		
@@ -239,6 +242,7 @@ class MazeModel implements Model {
 			
 			y=(0+ballRadius);
 			vy=0;
+			vx=0;//TODO
 		}
 		else 
 		if(y>(segmentSizeY-ballRadius)){
@@ -247,6 +251,7 @@ class MazeModel implements Model {
 			
 			y=(segmentSizeY-ballRadius);
 			vy=0;
+			vx=0;//TODO
 		}
 		
 		

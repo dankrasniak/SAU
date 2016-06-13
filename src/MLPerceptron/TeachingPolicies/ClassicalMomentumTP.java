@@ -34,7 +34,7 @@ public class ClassicalMomentumTP implements TeachingPolicy {
         for (int h = 0; h < HEIGHT; h++) {
             for (int l = 0; l < LENGTH; l++) {
                 w = weights.Get(h, l);
-                Momentum.Set(h, l, Momentum.Get(h, l) * 0.9 + 0.1 * newWeights.Get(h, l) * BetaV);
+                Momentum.Set(h, l, Momentum.Get(h, l) * 0.9 + newWeights.Get(h, l) * BetaV);
                 result.Set(h, l, w + Momentum.Get(h, l) );
             }
         }
