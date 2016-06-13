@@ -41,8 +41,8 @@ public class Maze extends JFrame  implements ActionListener {
         // Prepare parameters
         final int INPUT_SIZE = 6;//5;
         final int OUTPUT_SIZE = 1;
-        final double BetaV = -0.0001;
-        final int HORIZON_LENGTH = 45;
+        final double BetaV = -0.01;
+        final int HORIZON_LENGTH = 40;
         final int TIMES_TO_REWRITE_HISTORY = 30;
         final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;//40;
         final double GAMMA = 0.98;

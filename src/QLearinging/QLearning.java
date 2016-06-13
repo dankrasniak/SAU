@@ -104,12 +104,12 @@ public class QLearning {
                 .Get(0); // TODO MEH
         result += gammai * approx;
 // LOG
-        String toLog =
-                "State: " + nextStates[HORIZON_LENGTH-1].toString() + "\n" +
-                        "Decision: " + decisions[HORIZON_LENGTH-1] + "\n" +
-                        "DecisionValue: " + approx + "\n" +
-                        "-------";
-        logger.info(toLog);
+//        String toLog =
+//                "State: " + nextStates[HORIZON_LENGTH-1].toString() + "\n" +
+//                        "Decision: " + decisions[HORIZON_LENGTH-1] + "\n" +
+//                        "DecisionValue: " + approx + "\n" +
+//                        "-------";
+//        logger.info(toLog);
 
         return result; // TODO SAME AS V APPROXIMATOR // Update: Almost
     }
