@@ -41,13 +41,13 @@ public class Maze extends JFrame  implements ActionListener {
         // Prepare parameters
         final int INPUT_SIZE = 6;//5;
         final int OUTPUT_SIZE = 1;
-        final double BetaV = -0.01;
+        final double BetaV = -0.001;
         final int HORIZON_LENGTH = 40;
         final int TIMES_TO_REWRITE_HISTORY = 30;
         final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;//40;
         final double GAMMA = 0.98;
         final double SIGMA_MIN = 0.5;
-        final double SIGMA_START = 2;
+        final double SIGMA_START = 3;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
@@ -105,7 +105,7 @@ public class Maze extends JFrame  implements ActionListener {
 
     	this.mazeModel.update((double)(MazeModel.getTimerdelay())/(double)(1000));
 
-        qLearning.ThisHappened(mazeModel.getCurrentState());
+        qLearning.ThisHappened();
 
         repaint();
     }

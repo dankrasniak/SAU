@@ -48,7 +48,7 @@ public class QLearning {
         this.GAMMA = GAMMA;
         this.SIGMA_MIN = SIGMA_MIN;
         this.SIGMA_START = SIGMA_START;
-        Decisions = new int[HORIZON_LENGTH]; // TODO MORE
+        Decisions = new int[HORIZON_LENGTH];
         this._model = model;
 
         Initialize(sizes, cellTypes, teachingPolicy);
@@ -63,19 +63,28 @@ public class QLearning {
         PrepareABetterDecisionsList(state, Decisions, decisionValue); // TODO Not sure if finished parameters
 
         // LOG
-//        String toLog =
-//                "State: " + state.toString() + "\n" +
-//                "Decision: " + Decisions[0] + "\n" +
-//                "DecisionValue: " + decisionValue + "\n" +
-//                "-------";
-//        logger.info(toLog);
+        String result = "[" + Decisions[0];
+        final int LENGTH = Decisions.length;
+
+        for (int i = 1; i < LENGTH; i++) {
+            result += ", " + Decisions[i];
+        }
+        result += "]";
+
+
+        String toLog =
+                "State: " + state.toString() + "\n" +
+                "Decision: " + result + "\n" +
+                "DecisionValue: " + decisionValue + "\n" +
+                "-------";
+        logger.info(toLog);
 
         records.add(new Record(state, Decisions));
 
         return Decisions[0];
     }
 
-    public void ThisHappened(final Vector nextState) {
+    public void ThisHappened() {
         UpdateToTheNextIteration();
 
         RewriteHistoryeh();
@@ -88,7 +97,6 @@ public class QLearning {
                             final CellType[] cellTypes,
                             final TeachingPolicy teachingPolicy) {
         QApproximator = new MLPerceptronImpl(sizes, cellTypes, teachingPolicy);
-//        throw new NotImplementedException(); // TODO
     }
 
     private double CalculateValue(final Vector state, final int[] decisions) {
@@ -143,8 +151,8 @@ public class QLearning {
         // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
             sigmaDiscount = 1.0 + (double) ((i + 1) / HORIZON_LENGTH);
-            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, currentSigma) * sigmaDiscount) ) % 8; // 1
-            modifiedDecisions[i] = (tmp < 0) ? (7 - tmp) : tmp;
+            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, currentSigma) * sigmaDiscount) ) % 8;
+            modifiedDecisions[i] = (tmp < 0) ? (8 + tmp) : tmp;
         }
 
         // If the value of the state with new action vector is bigger, replace the previous action vector
