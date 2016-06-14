@@ -9,6 +9,7 @@ public class Vector {
         values = v;
     }
 
+
     /*-----Public methods------*/
 
     public Vector Clone() { // TODO Verify
@@ -66,7 +67,7 @@ public class Vector {
         Vector result = new Vector(HEIGHT);
 
         if (LENGTH != m.GetLength())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("MlpVectorMatrix");
 
         double sum;
         for (int y = 0; y < HEIGHT; y++) {
@@ -100,6 +101,7 @@ public class Vector {
 
         return result;
     }
+
 
     /*-----Variables------*/
 

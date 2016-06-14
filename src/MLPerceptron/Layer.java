@@ -24,12 +24,7 @@ public interface Layer {
     Vector Backward(final Vector gradient);
 
     /**
-     * Applies the weights
+     * Applies the weights.
      */
     void ApplyWeights();
-
-    /**
-     * @returns The <b>Weights</b> of the neurons in the current layer.
-     */
-    Matrix GetWeights();
 }

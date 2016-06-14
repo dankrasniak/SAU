@@ -34,8 +34,6 @@ public class LayerImpl implements Layer {
         weights = teachingPolicy.Execute(weights, dWeights, Momentum);
     }
 
-    final public Matrix GetWeights() { return weights; }
-
 
     /*-----Private methods------*/
 
@@ -69,7 +67,7 @@ public class LayerImpl implements Layer {
 
         for (int x = 0; x < HEIGHT; x++)
             for (int y = 0; y < LENGTH; y++)
-                m.Set(x, y, (random.nextDouble()-0.5)*2); // TODO tmp random.nextDouble()
+                m.Set(x, y, (random.nextDouble()-0.5)*2);
     }
 
     private Vector TweakInput(final Vector input) {

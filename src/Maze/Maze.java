@@ -39,12 +39,12 @@ public class Maze extends JFrame  implements ActionListener {
         // QLearning
 
         // Prepare parameters
-        final int INPUT_SIZE = 6;//5;
+        final int INPUT_SIZE = 6;
         final int OUTPUT_SIZE = 1;
         final double BetaV = -0.001;
-        final int HORIZON_LENGTH = 40;
+        final int HORIZON_LENGTH = 20;
         final int TIMES_TO_REWRITE_HISTORY = 30;
-        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;//40;
+        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;
         final double GAMMA = 0.98;
         final double SIGMA_MIN = 0.5;
         final double SIGMA_START = 3;
@@ -101,6 +101,7 @@ public class Maze extends JFrame  implements ActionListener {
     }
     
     public void actionPerformed(ActionEvent e) {
+        // Prepare and apply decisions
         mazeModel.setAAngleMultiplier45(qLearning.AdviseAction(mazeModel.getCurrentState()));
 
     	this.mazeModel.update((double)(MazeModel.getTimerdelay())/(double)(1000));

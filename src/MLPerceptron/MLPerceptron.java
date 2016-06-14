@@ -21,8 +21,6 @@ public interface MLPerceptron {
 
     /**
      * Applies the new weights gradient to the current weights of the neural network.
-     * @param teachingPolicy - defines the way in which the new weights are applied,
-     *                       in other words defines the teaching algorithm.
      */
     void ApplyWeights();
 

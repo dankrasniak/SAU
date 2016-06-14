@@ -24,11 +24,11 @@ class MazeModel implements Model {
             penalty = 10.0;
 
 //        double reward = Math.signum(state.Get(2)) * Math.min(Math.abs(state.Get(2)), 0.35) - penalty;
-        double reward = state.Get(2)/4 - penalty;
-//		double reward = (2 / (Math.exp(-5 * state.Get(2)) + 1) ) - penalty;
+//        double reward = state.Get(2)/4 - penalty;
+		double reward = (2 / (Math.exp(-5 * state.Get(2)) + 1) ) - penalty;
         return reward;
-//		return state.Get(2);
 	}
+
 	public Vector[] stateFunction(final Vector state, final int[] actions){
 		MazeModel testModel=new MazeModel(state);
 		Vector [] nextStates=new Vector[actions.length];
@@ -42,7 +42,7 @@ class MazeModel implements Model {
 		
 		return nextStates;
 	}
-	
+
 	
 
 	private double segmentType=1;

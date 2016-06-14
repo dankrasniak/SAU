@@ -7,11 +7,10 @@ import MLPerceptron.MLPerceptronImpl;
 import MLPerceptron.TeachingPolicies.TeachingPolicy;
 import MLPerceptron.Utils.ErrorApproximator;
 import MLPerceptron.Utils.Vector;
+import MyLogger.MyLogger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.*;
 
 public class QLearning {
 
@@ -25,22 +24,6 @@ public class QLearning {
                      final double SIGMA_MIN,
                      final double SIGMA_START,
                      final Model model) {
-
-
-        // Prepare Logger
-        try {
-            FileHandler fh = new FileHandler("MyLogFile.log");
-            logger.addHandler(fh);
-            fh.setFormatter(new Formatter() {
-                @Override
-                public String format(LogRecord record) {
-                    return record.getMessage() + "\n";
-                }
-            });
-            logger.setUseParentHandlers(false);
-        } catch (SecurityException | IOException e) {
-            e.printStackTrace();
-        }
 
         this.HORIZON_LENGTH = HORIZON_LENGTH;
         this.TIMES_TO_REWRITE_HISTORY = TIMES_TO_REWRITE_HISTORY;
@@ -60,7 +43,7 @@ public class QLearning {
     public int AdviseAction(final Vector state) {
         final double decisionValue = CalculateValue(state, Decisions);
 
-        PrepareABetterDecisionsList(state, Decisions, decisionValue); // TODO Not sure if finished parameters
+        PrepareABetterDecisionsList(state, Decisions, decisionValue);
 
         // LOG
 //        String result = "[" + Decisions[0];
@@ -81,14 +64,13 @@ public class QLearning {
 //        }
 //        result2 += "]";
 //
-//
         String toLog =
                 "State: " + state.toString() + "\n" +
-//                "NextStates: " + result2 +
+//                "NextStates: " + result2 + "\n" +
 //                "Decision: " + result + "\n" +
                 "DecisionValue: " + decisionValue + "\n" +
                 "+++";
-        logger.info(toLog);
+         MyLogger.Log("GivenToModel", toLog);
 
         records.add(new Record(state, Decisions));
 
@@ -113,7 +95,7 @@ public class QLearning {
     private double CalculateValue(final Vector state, final int[] decisions) {
         double gammai = 1;
         double result = 0.0;
-        Vector[] nextStates = _model.stateFunction(state, decisions); //new Vector[HORIZON_LENGTH];
+        Vector[] nextStates = _model.stateFunction(state, decisions);
 
         for (int i = 0; i < HORIZON_LENGTH; i++) {
             result += gammai * _model.getReward(nextStates[i]);
@@ -124,7 +106,7 @@ public class QLearning {
                         new Record(
                                 nextStates[HORIZON_LENGTH-1],
                                 new int[]{decisions[HORIZON_LENGTH-1]})))
-                .Get(0); // TODO MEH
+                .Get(0);
         result += gammai * approx;
 // LOG
 //        String toLog =
@@ -132,7 +114,7 @@ public class QLearning {
 //                        "Decision: " + decisions[HORIZON_LENGTH-1] + "\n" +
 //                        "DecisionValue: " + approx + "\n" +
 //                        "-------";
-//        logger.info(toLog);
+//        MyLogger.Log("CalculateValue", toLog);
 
         return result;
     }
@@ -159,7 +141,6 @@ public class QLearning {
 
         // Modify the Decisions List
         // 8 is the maximal value a decision can have
-        // 2 because the mix/max value the normal gradient can return will then be -8/8 // TODO
         for (int i = 0; i < HORIZON_LENGTH; i++) {
             sigmaDiscount = 1.0 + (double) ((i + 1) / HORIZON_LENGTH);
             tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, currentSigma) * sigmaDiscount) ) % 8;
@@ -210,7 +191,7 @@ public class QLearning {
 
             final double approximatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
-            final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue); //final double errorGrad = approximatedValue - estimatedValue;
+            final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue);
 
             QApproximator.BackPropagate(errorGrad);
             QApproximator.ApplyWeights();
@@ -218,16 +199,14 @@ public class QLearning {
     }
 
     private Vector TweakInput(final Record record) {
-        final int STATE_SIZE = record.state.GetLength() -1 ; // TODO
-//        double[] result = new double[STATE_SIZE + 1];
+        final int STATE_SIZE = record.state.GetLength() - 1; // Last value is a temporary bool
         double[] result = new double[STATE_SIZE + 2];
 
-        for (int i = 0; i < STATE_SIZE - 2; i++) {
+        for (int i = 0; i < STATE_SIZE; i++) {
             result[i] = record.state.Get(i);
         }
-        //result[STATE_SIZE] = (double) record.actions[0] / 7; // TODO
 
-        {// TMP DELETE THIS
+        {
             double ax, ay;
             switch (record.actions[0]) {
                 case 0:  ax=1;ay=0;
@@ -249,11 +228,12 @@ public class QLearning {
                 default: ax=0;ay=0;
                     break;
             }
-            result[STATE_SIZE-1] = ax;
-            result[STATE_SIZE] = ay;
+            result[STATE_SIZE] = ax;
+            result[STATE_SIZE+1] = ay;
 
-            result[0] = result[0] / 2;
-            result[1] = result[1] / 3;
+            // Normalize x and y
+            result[0] = result[0] / _model.getSegmentSizeX();
+            result[1] = result[1] / _model.getSegmentSizeY();
         }
 
         return new Vector(result);
@@ -281,6 +261,4 @@ public class QLearning {
     private final double M = 10;
     private final double C1 = 0.82;
     private final double C2 = 1.2;
-
-    private static Logger logger = Logger.getLogger("MyLog");
 }

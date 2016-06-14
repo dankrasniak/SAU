@@ -7,7 +7,7 @@ public class Record {
 
     public Record(final Vector state, final int[] actions) {
         this.state = state.Clone();
-        this.actions = actions; /// TODO Verify Arrays.copyOf(actions, actions.length);
+        this.actions = actions;
     }
 
     /*-----Variables------*/

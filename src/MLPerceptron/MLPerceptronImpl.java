@@ -29,9 +29,6 @@ public class MLPerceptronImpl implements MLPerceptron {
     final public void BackPropagate(final Vector gradient) {
         Vector passedValue = gradient;
 
-//        for (Layer layer : layers)
-//            passedValue = layer.Backward(passedValue);
-
         for (int i = layers.size()-1; i > -1; i--)
             passedValue = layers.get(i).Backward(passedValue);
     }

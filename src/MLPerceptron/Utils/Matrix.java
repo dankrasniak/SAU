@@ -7,6 +7,7 @@ public class Matrix {
         values = new double[output][input];
     }
 
+
     /*-----Public methods------*/
 
     final public void Add(final Matrix m, final double betaV) {
@@ -14,7 +15,7 @@ public class Matrix {
         final int HEIGHT = m.values[0].length;
 
         if (LENGTH != values.length && HEIGHT != values[0].length)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Matrix::Add");
 
         for (int x = 0; x < LENGTH; x++)
             for (int y = 0; y < HEIGHT; y++)
