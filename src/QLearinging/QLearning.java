@@ -63,20 +63,31 @@ public class QLearning {
         PrepareABetterDecisionsList(state, Decisions, decisionValue); // TODO Not sure if finished parameters
 
         // LOG
-        String result = "[" + Decisions[0];
-        final int LENGTH = Decisions.length;
-
-        for (int i = 1; i < LENGTH; i++) {
-            result += ", " + Decisions[i];
-        }
-        result += "]";
-
-
+//        String result = "[" + Decisions[0];
+//        final int LENGTH = Decisions.length;
+//
+//        for (int i = 1; i < LENGTH; i++) {
+//            result += ", " + Decisions[i];
+//        }
+//        result += "]";
+//
+//
+//        Vector[] tmp = _model.stateFunction(state, Decisions);
+//        String result2 = "[" + tmp[0].toString();
+//        final int LENGTH2 = tmp.length;
+//
+//        for (int i = 1; i < LENGTH2; i++) {
+//            result2 += ", " + tmp[i].toString();
+//        }
+//        result2 += "]";
+//
+//
         String toLog =
                 "State: " + state.toString() + "\n" +
-                "Decision: " + result + "\n" +
+//                "NextStates: " + result2 +
+//                "Decision: " + result + "\n" +
                 "DecisionValue: " + decisionValue + "\n" +
-                "-------";
+                "+++";
         logger.info(toLog);
 
         records.add(new Record(state, Decisions));
@@ -123,7 +134,7 @@ public class QLearning {
 //                        "-------";
 //        logger.info(toLog);
 
-        return result; // TODO SAME AS V APPROXIMATOR // Update: Almost
+        return result;
     }
 
     private double PrepareABetterDecisionsList(final Vector state,
@@ -207,7 +218,7 @@ public class QLearning {
     }
 
     private Vector TweakInput(final Record record) {
-        final int STATE_SIZE = record.state.GetLength();
+        final int STATE_SIZE = record.state.GetLength() -1 ; // TODO
 //        double[] result = new double[STATE_SIZE + 1];
         double[] result = new double[STATE_SIZE + 2];
 
