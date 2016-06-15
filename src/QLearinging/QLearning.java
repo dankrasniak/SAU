@@ -43,34 +43,21 @@ public class QLearning {
     public int AdviseAction(final Vector state) {
         final double decisionValue = CalculateValue(state, Decisions);
 
-        PrepareABetterDecisionsList(state, Decisions, decisionValue);
+        double estimatedValue = PrepareABetterDecisionsList(state, Decisions, decisionValue);
 
         // LOG
-//        String result = "[" + Decisions[0];
-//        final int LENGTH = Decisions.length;
-//
-//        for (int i = 1; i < LENGTH; i++) {
-//            result += ", " + Decisions[i];
-//        }
-//        result += "]";
-//
-//
-//        Vector[] tmp = _model.stateFunction(state, Decisions);
-//        String result2 = "[" + tmp[0].toString();
-//        final int LENGTH2 = tmp.length;
-//
-//        for (int i = 1; i < LENGTH2; i++) {
-//            result2 += ", " + tmp[i].toString();
-//        }
-//        result2 += "]";
-//
-        String toLog =
-                "State: " + state.toString() + "\n" +
-//                "NextStates: " + result2 + "\n" +
-//                "Decision: " + result + "\n" +
-                "DecisionValue: " + decisionValue + "\n" +
-                "+++";
+//        String toLog =
+//                "State: " + state.toString() + "\n" +
+//                "DecisionValue: " + decisionValue + "\n" +
+//                "+++";
 //         MyLogger.Log("GivenToModel", toLog);
+
+        final double approximatedValue = QApproximator.Approximate(TweakInput(new Record(state, Decisions))).Get(0);
+
+        final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue);
+
+        QApproximator.BackPropagate(errorGrad);
+        QApproximator.ApplyWeights();
 
         records.add(new Record(state, Decisions));
 
