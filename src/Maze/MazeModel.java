@@ -25,7 +25,7 @@ class MazeModel implements Model {
 
 //        double reward = Math.signum(state.Get(2)) * Math.min(Math.abs(state.Get(2)), 0.35) - penalty;
 //        double reward = state.Get(2)/4 - penalty;
-		double reward = (2 / (Math.exp(-5 * state.Get(2)) + 1) ) - penalty;
+		double reward = (2 / (Math.exp(-5 * state.Get(2)) + 1) ) - 1 - penalty;
         return reward;
 	}
 

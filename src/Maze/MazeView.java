@@ -169,12 +169,16 @@ class MazeView extends JPanel{
 	    	g2d.drawString("time="+(Math.round(mazeModel.getTimeInSegment()*100.0)/100.0), xTextPosition, 14*yTextHeight);
 	    	g2d.drawString("lastTime="+(Math.round(mazeModel.getLastTimeInSegment()*100.0)/100.0), xTextPosition, 15*yTextHeight);
 	    	g2d.drawString("averageTime="+(Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0), xTextPosition, 16*yTextHeight);
-	    	
+			if (avgt != (Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0)) {
+				avgt = (Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0);
+				MyLogger.MyLogger.Log("AverageTime25", avgt + "");
+			}
 	    	
 	    g2d.dispose();
         
         
     }
+	private static double avgt = -2;
 
     @Override
     public void paintComponent(Graphics g) {

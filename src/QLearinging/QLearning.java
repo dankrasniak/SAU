@@ -70,7 +70,7 @@ public class QLearning {
 //                "Decision: " + result + "\n" +
                 "DecisionValue: " + decisionValue + "\n" +
                 "+++";
-         MyLogger.Log("GivenToModel", toLog);
+//         MyLogger.Log("GivenToModel", toLog);
 
         records.add(new Record(state, Decisions));
 
@@ -97,14 +97,14 @@ public class QLearning {
         double result = 0.0;
         Vector[] nextStates = _model.stateFunction(state, decisions);
 
-        for (int i = 0; i < HORIZON_LENGTH; i++) {
+        for (int i = 0; i < HORIZON_LENGTH - 1; i++) {
             result += gammai * _model.getReward(nextStates[i]);
             gammai *= GAMMA;
         }
         double approx = QApproximator.Approximate(
                 TweakInput(
                         new Record(
-                                nextStates[HORIZON_LENGTH-1],
+                                nextStates[HORIZON_LENGTH-2],
                                 new int[]{decisions[HORIZON_LENGTH-1]})))
                 .Get(0);
         result += gammai * approx;
