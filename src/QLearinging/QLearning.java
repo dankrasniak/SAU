@@ -7,9 +7,10 @@ import MLPerceptron.MLPerceptronImpl;
 import MLPerceptron.TeachingPolicies.TeachingPolicy;
 import MLPerceptron.Utils.ErrorApproximator;
 import MLPerceptron.Utils.Vector;
-import MyLogger.MyLogger;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class QLearning {
@@ -17,21 +18,21 @@ public class QLearning {
     public QLearning(final int[] sizes,
                      final CellType[] cellTypes,
                      final TeachingPolicy teachingPolicy,
-                     final int HORIZON_LENGTH,
+//                     final int HORIZON_LENGTH,
                      final int TIMES_TO_REWRITE_HISTORY,
-                     final int TIMES_TO_PREPARE_BETTER_SOLUTION,
                      final double GAMMA,
-                     final double SIGMA_MIN,
-                     final double SIGMA_START,
+                     final int MEMORY_LIMIT,
+//                     final double SIGMA_MIN,
+//                     final double SIGMA_START,
                      final Model model) {
 
-        this.HORIZON_LENGTH = HORIZON_LENGTH;
+//        this.HORIZON_LENGTH = HORIZON_LENGTH;
         this.TIMES_TO_REWRITE_HISTORY = TIMES_TO_REWRITE_HISTORY;
-        this.TIMES_TO_PREPARE_BETTER_SOLUTION = TIMES_TO_PREPARE_BETTER_SOLUTION;
         this.GAMMA = GAMMA;
-        this.SIGMA_MIN = SIGMA_MIN;
-        this.SIGMA_START = SIGMA_START;
-        Decisions = new int[HORIZON_LENGTH];
+        this.MEMORY_LIMIT = MEMORY_LIMIT;
+//        this.SIGMA_MIN = SIGMA_MIN;
+//        this.SIGMA_START = SIGMA_START;
+        Decision = new int[1]; // [HORIZON_LENGTH]
         this._model = model;
 
         Initialize(sizes, cellTypes, teachingPolicy);
@@ -41,31 +42,39 @@ public class QLearning {
     /*-----Public methods------*/
 
     public int AdviseAction(final Vector state) {
-        final double decisionValue = CalculateValue(state, Decisions);
+        // Algorytm Q-Learning
+        // Wylosuj a na podstawie Q
+        // Wykonaj a
 
-        double estimatedValue = PrepareABetterDecisionsList(state, Decisions, decisionValue);
+        State = state;
 
-        // LOG
-//        String toLog =
-//                "State: " + state.toString() + "\n" +
-//                "DecisionValue: " + decisionValue + "\n" +
-//                "+++";
-//         MyLogger.Log("GivenToModel", toLog);
+        EstimatedValue = PrepareADecision(State, Decision);
+        System.out.println(EstimatedValue + " " + Decision[0]);
+        return Decision[0];
+    }
 
-        final double approximatedValue = QApproximator.Approximate(TweakInput(new Record(state, Decisions))).Get(0);
+    public void ThisHappened(final Vector nextState, final double reward) {
+        // Algorytm Q-Learning
+        // Pobierz r_t+1 i x_t+1
+        // Ucz sieć na podstawie tych danych
+        // Powtarzanie
 
-        final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue);
+        if (nextState.Get(4) == 1) error.add(1);
+        else error.add(0);
+        if (error.size() > 10) error.remove(0);
+
+        double approximatedValue = CalculateValue(nextState, reward);
+//        if (reward == -2)
+//            approximatedValue = reward;
+
+        final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, EstimatedValue);
 
         QApproximator.BackPropagate(errorGrad);
         QApproximator.ApplyWeights();
 
-        records.add(new Record(state, Decisions));
-
-        return Decisions[0];
-    }
-
-    public void ThisHappened() {
-        UpdateToTheNextIteration();
+        records.add(new Record(State, Decision[0], nextState, reward));
+        if (records.size() > MEMORY_LIMIT)
+            records.remove(0);
 
         RewriteHistoryeh();
     }
@@ -79,92 +88,47 @@ public class QLearning {
         QApproximator = new MLPerceptronImpl(sizes, cellTypes, teachingPolicy);
     }
 
-    private double CalculateValue(final Vector state, final int[] decisions) {
-        double gammai = 1;
-        double result = 0.0;
-        Vector[] nextStates = _model.stateFunction(state, decisions);
+    private double PrepareADecision(final Vector state, final int[] decision) {
+        double currentDecisionsValue = 0;
+        double maxValue = -1000.0;
+        int checkedDecision;
+        double epsilon = 0.3;
 
-        for (int i = 0; i < HORIZON_LENGTH - 1; i++) {
-            result += gammai * _model.getReward(nextStates[i]);
-            gammai *= GAMMA;
+//        epsilon/8 + (1-epsilon)*
+
+        int tmp = 0;
+        for (int i = 0; i < error.size(); i++) {
+            tmp += error.get(i);
         }
-        double approx = QApproximator.Approximate(
-                TweakInput(
-                        new Record(
-                                nextStates[HORIZON_LENGTH-2],
-                                new int[]{decisions[HORIZON_LENGTH-1]})))
-                .Get(0);
-        result += gammai * approx;
-// LOG
-//        String toLog =
-//                "State: " + nextStates[HORIZON_LENGTH-1].toString() + "\n" +
-//                        "Decision: " + decisions[HORIZON_LENGTH-1] + "\n" +
-//                        "DecisionValue: " + approx + "\n" +
-//                        "-------";
-//        MyLogger.Log("CalculateValue", toLog);
 
-        return result;
-    }
-
-    private double PrepareABetterDecisionsList(final Vector state,
-                                             int[] decisions,
-                                             double currentDecisionsValue) {
-        phi = 0;
-        timesITried = 0;
-        currentSigma = SIGMA_START;
-
-        while (timesITried < TIMES_TO_PREPARE_BETTER_SOLUTION || currentSigma < SIGMA_MIN) {
-            ++timesITried;
-            currentDecisionsValue = ModifyDecisionsList(state, decisions, currentDecisionsValue);
-        }
+        if (tmp >= 2) {
+            decision[0] = new Random().nextInt(8);
+            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, decision[0], state, 0))).Get(0);
+        } else
+            for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
+                currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
+                if (currentDecisionsValue > maxValue) {
+                    decision[0] = checkedDecision;
+                    maxValue = currentDecisionsValue;
+                }
+            }
 
         return currentDecisionsValue;
     }
 
-    private double ModifyDecisionsList(final Vector state, int[] decisions, double currentDecisionValue) {
-        int[] modifiedDecisions = decisions.clone();
-        double sigmaDiscount;
-        int tmp;
+    private double CalculateValue(final Vector nextState, final double reward) {
+        double result = 0.0;
 
-        // Modify the Decisions List
-        // 8 is the maximal value a decision can have
-        for (int i = 0; i < HORIZON_LENGTH; i++) {
-            sigmaDiscount = 1.0 + (double) ((i + 1) / HORIZON_LENGTH);
-            tmp = ( modifiedDecisions[i] + (int) (Sampler.sampleFromNormal(0, currentSigma) * sigmaDiscount) ) % 8;
-            modifiedDecisions[i] = (tmp < 0) ? (8 + tmp) : tmp;
-        }
+        // r
+        result += reward;
 
-        // If the value of the state with new action vector is bigger, replace the previous action vector
-        double newDecisionsValue = CalculateValue(state, modifiedDecisions);
-        if (newDecisionsValue > currentDecisionValue) {
-            System.arraycopy(modifiedDecisions, 0, decisions, 0, HORIZON_LENGTH);
-            currentDecisionValue = newDecisionsValue;
-            ++phi;
-        }
+        // max(u) Q(x_t+1, u)
+        double approx = PrepareADecision(nextState, new int[1]);
 
-        UpdateSigma();
-        return currentDecisionValue;
-    }
+        // r + gamma * max(u) Q(x_t+1, u)
+        result += GAMMA * approx;
 
-    private void UpdateSigma() {
-        if (timesITried % M != 0)
-            return;
-
-        if (phi / M < 0.2) {
-            currentSigma *= C1;
-        }
-        else if (phi / M > 0.2)
-        {
-            currentSigma *= C2;
-        }
-        phi = 0; // if currentSigma == 0.2
-    }
-
-    private void UpdateToTheNextIteration() {
-        final int HORIZON_LENGTH_M1 = HORIZON_LENGTH - 1;
-        for (int i = 0; i < HORIZON_LENGTH_M1;) {
-            Decisions[i] = Decisions[++i];
-        }
+        return result;
     }
 
     private void RewriteHistoryeh() {
@@ -172,11 +136,12 @@ public class QLearning {
         for (int i = 0; i < TIMES_TO_REWRITE_HISTORY; i++) {
             final Record record = records.get(random.nextInt(records.size()));
 
-            double estimatedValue = CalculateValue(record.state, record.actions);
+//            double estimatedValue = PrepareADecision(record.state, new int[]{record.decision}); // ???? dla wcześniej wylosowanej wartości czy nową losować??
+            double estimatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
-            estimatedValue = PrepareABetterDecisionsList(record.state, record.actions, estimatedValue);
+            double approximatedValue = CalculateValue(record.nextState, record.reward);
 
-            final double approximatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
+//            final double approximatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
             final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue);
 
@@ -195,7 +160,7 @@ public class QLearning {
 
         {
             double ax, ay;
-            switch (record.actions[0]) {
+            switch (record.decision) {
                 case 0:  ax=1;ay=0;
                     break;
                 case 1:  ax=0.70710678;ay=0.70710678;
@@ -229,23 +194,25 @@ public class QLearning {
 
     /*-----Variables------*/
 
-    private final int HORIZON_LENGTH;
+//    private final int HORIZON_LENGTH;
     private final int TIMES_TO_REWRITE_HISTORY;
-    private final int TIMES_TO_PREPARE_BETTER_SOLUTION;
     private ArrayList<Record> records = new ArrayList<>();
-    private int[] Decisions;
+    private Vector State;
+    private int[] Decision;
+    private double EstimatedValue;
     private final Random random = new Random();
     private MLPerceptron QApproximator;
     private final Model _model;
+    private final int MEMORY_LIMIT;
     private final double GAMMA;
 
+    private List<Integer> error = new LinkedList<>();
     // Evolution Algorithm
-    private int phi;
-    private int timesITried;
-    private double currentSigma;
-    private final double SIGMA_MIN;
-    private final double SIGMA_START;
-    private final double M = 10;
-    private final double C1 = 0.82;
-    private final double C2 = 1.2;
+//    private int phi;
+//    private double currentSigma;
+//    private final double SIGMA_MIN;
+//    private final double SIGMA_START;
+//    private final double M = 10;
+//    private final double C1 = 0.82;
+//    private final double C2 = 1.2;
 }

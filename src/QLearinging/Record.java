@@ -5,13 +5,17 @@ import MLPerceptron.Utils.Vector;
 
 public class Record {
 
-    public Record(final Vector state, final int[] actions) {
+    public Record(final Vector state, final int decision, final Vector nextState, final double reward) {
         this.state = state.Clone();
-        this.actions = actions;
+        this.decision = decision;
+        this.nextState = nextState;
+        this.reward = reward;
     }
 
     /*-----Variables------*/
 
     public Vector state;
-    public int[] actions;
+    public int decision;
+    public Vector nextState;
+    public double reward;
 }

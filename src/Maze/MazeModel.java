@@ -21,7 +21,7 @@ class MazeModel implements Model {
 	public double getReward(final Vector state){
         double penalty = 0.0;
         if (state.Get(4) == 1)
-            penalty = 10.0;
+            penalty = .0;
 
 //        double reward = Math.signum(state.Get(2)) * Math.min(Math.abs(state.Get(2)), 0.35) - penalty;
 //        double reward = state.Get(2)/4 - penalty;

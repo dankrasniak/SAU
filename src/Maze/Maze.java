@@ -41,13 +41,14 @@ public class Maze extends JFrame  implements ActionListener {
         // Prepare parameters
         final int INPUT_SIZE = 6;
         final int OUTPUT_SIZE = 1;
-        final double BetaV = -0.0001;
-        final int HORIZON_LENGTH = 2;
-        final int TIMES_TO_REWRITE_HISTORY = 0;
-        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;
+        final double BetaV = -0.000001;
+//        final int HORIZON_LENGTH = 2;
+        final int TIMES_TO_REWRITE_HISTORY = 30;
+//        final int TIMES_TO_PREPARE_BETTER_SOLUTION = 30;
         final double GAMMA = 0.98;
-        final double SIGMA_MIN = 0.5;
-        final double SIGMA_START = 3;
+        final int MEMORY_LIMIT = 100;
+//        final double SIGMA_MIN = 0.5;
+//        final double SIGMA_START = 3;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
@@ -57,12 +58,13 @@ public class Maze extends JFrame  implements ActionListener {
                 sizes,
                 cellTypes,
                 teachingPolicy,
-                HORIZON_LENGTH,
+//                HORIZON_LENGTH,
                 TIMES_TO_REWRITE_HISTORY,
-                TIMES_TO_PREPARE_BETTER_SOLUTION,
+//                TIMES_TO_PREPARE_BETTER_SOLUTION,
                 GAMMA,
-                SIGMA_MIN,
-                SIGMA_START,
+                MEMORY_LIMIT,
+//                SIGMA_MIN,
+//                SIGMA_START,
                 this.mazeModel);
 
         // -- QLearning
@@ -103,10 +105,11 @@ public class Maze extends JFrame  implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // Prepare and apply decisions
         mazeModel.setAAngleMultiplier45(qLearning.AdviseAction(mazeModel.getCurrentState()));
+        double reward = mazeModel.getReward(mazeModel.getCurrentState());
 
     	this.mazeModel.update((double)(MazeModel.getTimerdelay())/(double)(1000));
 
-        qLearning.ThisHappened();
+        qLearning.ThisHappened(mazeModel.getCurrentState(), reward);
 
         repaint();
     }
