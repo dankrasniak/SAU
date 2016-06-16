@@ -221,7 +221,7 @@ class MazeModel implements Model {
 			
 			x=(segmentBorderWidth+ballRadius);
 			vx=0;
-            vy=0;//TODO
+//            vy=0;//TODO
 		}
 		else 
 		if(
@@ -232,7 +232,7 @@ class MazeModel implements Model {
 			
 			x=(segmentSizeX-(segmentBorderWidth+ballRadius));
 			vx=0;
-            vy=0;//TODO
+//            vy=0;//TODO
 		}
 
 		
@@ -243,7 +243,7 @@ class MazeModel implements Model {
 			
 			y=(0+ballRadius);
 			vy=0;
-            vx=0;//TODO
+//            vx=0;//TODO
 		}
 		else 
 		if(y>(segmentSizeY-ballRadius)){
@@ -252,7 +252,7 @@ class MazeModel implements Model {
 			
 			y=(segmentSizeY-ballRadius);
 			vy=0;
-            vx=0;//TODO
+//            vx=0;//TODO
 		}
 		
 		

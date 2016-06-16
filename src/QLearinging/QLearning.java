@@ -59,9 +59,9 @@ public class QLearning {
         // Ucz sieć na podstawie tych danych
         // Powtarzanie
 
-        if (nextState.Get(4) == 1) error.add(1);
-        else error.add(0);
-        if (error.size() > 10) error.remove(0);
+//        if (nextState.Get(4) == 1) error.add(1);
+//        else error.add(0);
+//        if (error.size() > 10) error.remove(0);
 
         double approximatedValue = CalculateValue(nextState, reward);
 //        if (reward == -2)
@@ -93,25 +93,60 @@ public class QLearning {
         double maxValue = -1000.0;
         int checkedDecision;
         double epsilon = 0.3;
+        List<Integer> decisions = new LinkedList<>();
+        double[] decisionsP = new double[8];
 
-//        epsilon/8 + (1-epsilon)*
-
-        int tmp = 0;
-        for (int i = 0; i < error.size(); i++) {
-            tmp += error.get(i);
+        for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
+            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
+            if (currentDecisionsValue > maxValue) {
+                decision[0] = checkedDecision;
+                maxValue = currentDecisionsValue;
+            }
         }
 
-        if (tmp >= 2) {
-            decision[0] = new Random().nextInt(8);
-            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, decision[0], state, 0))).Get(0);
-        } else
-            for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
-                currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
-                if (currentDecisionsValue > maxValue) {
-                    decision[0] = checkedDecision;
-                    maxValue = currentDecisionsValue;
-                }
+        for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
+            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
+            if (currentDecisionsValue == maxValue) {
+                decisions.add(checkedDecision);
             }
+        }
+
+        for (int i = 0; i < 8; i++) {
+            decisionsP[i] = epsilon/8 + (1-epsilon)*(decisions.contains(i) ? 1 : 0)/decisions.size();
+//            System.out.print(" " + decisionsP[i]);
+        }
+//        System.out.println();
+
+        double choosenValue = new Random().nextDouble();
+        double max = 0.0;
+        for (int i = 0; i < 8; i++)
+            max += decisionsP[i];
+        choosenValue *= max;
+
+        double tmp = 0.0;
+        for (int i = 0; i < 8; i++) {
+            tmp += decisionsP[i];
+            if (choosenValue <= tmp) {
+                decision[0] = i;
+                return currentDecisionsValue;
+            }
+        }
+
+        return currentDecisionsValue;
+    }
+
+    private double PrepareADecision2(final Vector state, final int[] decision) {
+        double currentDecisionsValue = 0;
+        double maxValue = -1000.0;
+        int checkedDecision;
+
+        for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
+            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
+            if (currentDecisionsValue > maxValue) {
+                decision[0] = checkedDecision;
+                maxValue = currentDecisionsValue;
+            }
+        }
 
         return currentDecisionsValue;
     }
