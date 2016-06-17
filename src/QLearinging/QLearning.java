@@ -18,21 +18,14 @@ public class QLearning {
     public QLearning(final int[] sizes,
                      final CellType[] cellTypes,
                      final TeachingPolicy teachingPolicy,
-//                     final int HORIZON_LENGTH,
                      final int TIMES_TO_REWRITE_HISTORY,
                      final double GAMMA,
                      final int MEMORY_LIMIT,
-//                     final double SIGMA_MIN,
-//                     final double SIGMA_START,
                      final Model model) {
-
-//        this.HORIZON_LENGTH = HORIZON_LENGTH;
         this.TIMES_TO_REWRITE_HISTORY = TIMES_TO_REWRITE_HISTORY;
         this.GAMMA = GAMMA;
         this.MEMORY_LIMIT = MEMORY_LIMIT;
-//        this.SIGMA_MIN = SIGMA_MIN;
-//        this.SIGMA_START = SIGMA_START;
-        Decision = new int[1]; // [HORIZON_LENGTH]
+        Decision = new int[1];
         this._model = model;
 
         Initialize(sizes, cellTypes, teachingPolicy);
@@ -49,7 +42,6 @@ public class QLearning {
         State = state;
 
         EstimatedValue = PrepareADecision(State, Decision);
-        System.out.println(EstimatedValue + " " + Decision[0]);
         return Decision[0];
     }
 
@@ -59,15 +51,13 @@ public class QLearning {
         // Ucz sieć na podstawie tych danych
         // Powtarzanie
 
-//        if (nextState.Get(4) == 1) error.add(1);
-//        else error.add(0);
-//        if (error.size() > 10) error.remove(0);
-
         double approximatedValue = CalculateValue(nextState, reward);
-//        if (reward == -2)
-//            approximatedValue = reward;
 
-        final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, EstimatedValue);
+        final Vector errorGrad = ErrorApproximator.GetError(EstimatedValue, approximatedValue);
+        System.out.println(EstimatedValue + " " + approximatedValue);
+
+        // TMP
+        double estimatedValue = QApproximator.Approximate(TweakInput(new Record(State, Decision[0], State, 0))).Get(0);
 
         QApproximator.BackPropagate(errorGrad);
         QApproximator.ApplyWeights();
@@ -96,6 +86,7 @@ public class QLearning {
         List<Integer> decisions = new LinkedList<>();
         double[] decisionsP = new double[8];
 
+        // Look for the biggest value
         for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
             currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
             if (currentDecisionsValue > maxValue) {
@@ -104,6 +95,7 @@ public class QLearning {
             }
         }
 
+        // Look for decisions which value is equal to the biggest value
         for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
             currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
             if (currentDecisionsValue == maxValue) {
@@ -111,11 +103,10 @@ public class QLearning {
             }
         }
 
+        // Check the probability of each value
         for (int i = 0; i < 8; i++) {
             decisionsP[i] = epsilon/8 + (1-epsilon)*(decisions.contains(i) ? 1 : 0)/decisions.size();
-//            System.out.print(" " + decisionsP[i]);
         }
-//        System.out.println();
 
         double choosenValue = new Random().nextDouble();
         double max = 0.0;
@@ -128,27 +119,11 @@ public class QLearning {
             tmp += decisionsP[i];
             if (choosenValue <= tmp) {
                 decision[0] = i;
-                return currentDecisionsValue;
+                return QApproximator.Approximate(TweakInput(new Record(state, i, state, 0))).Get(0);
             }
         }
 
-        return currentDecisionsValue;
-    }
-
-    private double PrepareADecision2(final Vector state, final int[] decision) {
-        double currentDecisionsValue = 0;
-        double maxValue = -1000.0;
-        int checkedDecision;
-
-        for (checkedDecision = 0; checkedDecision < 8; ++checkedDecision) {
-            currentDecisionsValue = QApproximator.Approximate(TweakInput(new Record(state, checkedDecision, state, 0))).Get(0);
-            if (currentDecisionsValue > maxValue) {
-                decision[0] = checkedDecision;
-                maxValue = currentDecisionsValue;
-            }
-        }
-
-        return currentDecisionsValue;
+        return maxValue;
     }
 
     private double CalculateValue(final Vector nextState, final double reward) {
@@ -172,13 +147,16 @@ public class QLearning {
             final Record record = records.get(random.nextInt(records.size()));
 
 //            double estimatedValue = PrepareADecision(record.state, new int[]{record.decision}); // ???? dla wcześniej wylosowanej wartości czy nową losować??
-            double estimatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
             double approximatedValue = CalculateValue(record.nextState, record.reward);
 
 //            final double approximatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
 
-            final Vector errorGrad = ErrorApproximator.GetError(approximatedValue, estimatedValue);
+
+            double estimatedValue = QApproximator.Approximate(TweakInput(record)).Get(0);
+
+
+            final Vector errorGrad = ErrorApproximator.GetError(estimatedValue, approximatedValue);
 
             QApproximator.BackPropagate(errorGrad);
             QApproximator.ApplyWeights();
