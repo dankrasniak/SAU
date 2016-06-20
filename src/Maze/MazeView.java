@@ -171,7 +171,7 @@ class MazeView extends JPanel{
 	    	g2d.drawString("averageTime="+(Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0), xTextPosition, 16*yTextHeight);
 			if (avgt != (Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0)) {
 				avgt = (Math.round(mazeModel.getAverageTimeInSegment()*100.0)/100.0);
-				MyLogger.MyLogger.Log("AverageTime", avgt + "");
+				MyLogger.MyLogger.Log("AverageTimeb5", avgt + "");
 			}
 	    	
 	    g2d.dispose();

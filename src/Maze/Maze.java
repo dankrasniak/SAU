@@ -42,7 +42,7 @@ public class Maze extends JFrame  implements ActionListener {
         final int INPUT_SIZE = 6;
         final int OUTPUT_SIZE = 1;
         final double BetaV = -0.0001;
-        final int TIMES_TO_REWRITE_HISTORY = 30;
+        final int TIMES_TO_REWRITE_HISTORY = 0;
         final double GAMMA = 0.98;
         final int MEMORY_LIMIT = 100;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
@@ -107,7 +107,7 @@ public class Maze extends JFrame  implements ActionListener {
     }
     
     private void initTimer() {
-        timer = new Timer(MazeModel.getTimerdelay(), this);
+        timer = new Timer(2, this);
         timer.start();
     }
 }

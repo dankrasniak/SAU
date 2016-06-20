@@ -54,7 +54,7 @@ public class QLearning {
         double approximatedValue = CalculateValue(nextState, reward);
 
         final Vector errorGrad = ErrorApproximator.GetError(EstimatedValue, approximatedValue);
-        System.out.println(EstimatedValue + " " + approximatedValue);
+//        System.out.println(EstimatedValue + " " + approximatedValue);
 
         // TMP
         double estimatedValue = QApproximator.Approximate(TweakInput(new Record(State, Decision[0], State, 0))).Get(0);
