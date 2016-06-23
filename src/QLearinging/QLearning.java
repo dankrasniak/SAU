@@ -82,7 +82,7 @@ public class QLearning {
         double currentDecisionsValue = 0;
         double maxValue = -1000.0;
         int checkedDecision;
-        double epsilon = 0.3;
+        double epsilon = 0.1;
         List<Integer> decisions = new LinkedList<>();
         double[] decisionsP = new double[8];
 

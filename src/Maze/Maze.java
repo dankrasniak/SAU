@@ -42,9 +42,9 @@ public class Maze extends JFrame  implements ActionListener {
         final int INPUT_SIZE = 6;
         final int OUTPUT_SIZE = 1;
         final double BetaV = -0.0001;
-        final int TIMES_TO_REWRITE_HISTORY = 0;
+        final int TIMES_TO_REWRITE_HISTORY = 30;
         final double GAMMA = 0.98;
-        final int MEMORY_LIMIT = 100;
+        final int MEMORY_LIMIT = 10000;
         TeachingPolicy teachingPolicy = new ClassicalMomentumTP(BetaV);
 
         // Build the neural network
